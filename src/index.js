@@ -17,7 +17,12 @@ const getLocations = async () => {
             { method: 'GET' }
         );
         const json = await response.json();
-        geojson.features.push(...json['bustime-response'].vehicle.map(vehicle => {
+        
+        let vehicles = json['bustime-response'].vehicle;
+        if (!vehicles) { continue; }
+        else if (!Array.isArray(vehicles)) { vehicles = [ vehicles ]; }
+        
+        vehicles = vehicles.map(vehicle => {
             return {
                 type: 'Feature',
                 geometry: {
@@ -29,7 +34,9 @@ const getLocations = async () => {
                     hdg: vehicle.hdg
                 }
             };
-        }));
+        });
+        
+        geojson.features.push(...vehicles);
     }
     
     return geojson;
