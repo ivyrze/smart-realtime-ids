@@ -4,4 +4,10 @@ This project allows you to view SMART's vehicle locations and IDs on a map.
 
 # Development
 
-Make sure to use the environment variable `MAPBOX_ACCESS_TOKEN` at build time.
+You can run the Webpack development server with:
+
+```
+npm run develop
+```
+
+Make sure to populate your environment variables at build time or make use of `.env`.
