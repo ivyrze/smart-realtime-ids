@@ -1,3 +1,5 @@
+import arrow from '../asset/arrow.png';
+
 mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN;
 const map = new mapboxgl.Map({
     container: 'map',
@@ -48,8 +50,15 @@ const updateSource = setInterval(async () => {
     map.getSource('realtime').setData(geojson);
 }, 10000);
 
+const arrowElem = document.createElement('img');
+arrowElem.src = arrow;
+
 map.on('load', async () => {
     const geojson = await getLocations();
+    
+    if (!map.hasImage('arrow')) {
+        map.addImage('arrow', arrowElem);
+    }
     
     map.addSource('realtime', {
         type: 'geojson',
@@ -71,15 +80,20 @@ map.on('load', async () => {
         id: "realtime-icons",
         type: "symbol",
         source: "realtime",
+        paint: {
+            "text-halo-color": "hsla(0, 0%, 95%, 0.80)",
+            "text-halo-width": 4
+        },
         layout: {
-            "icon-image": "bus",
+            "icon-image": "arrow",
             "icon-allow-overlap": true,
-            "icon-size": 1,
+            "icon-size": 0.1,
             "icon-rotate": ['to-number', ['get', 'hdg']],
+            "text-font": [ "DIN Pro Medium" ],
             "text-allow-overlap": true,
             "text-ignore-placement": true,
             "text-field": ['get', 'text'],
-            "text-offset": [0, 1]
+            "text-offset": [0, 1.25]
         }
     });
 });
