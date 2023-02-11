@@ -2,7 +2,8 @@ mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN;
 const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v12',
-    zoom: 1.5
+    center: [ -83.1195, 42.4258 ],
+    zoom: 9
 });
 
 const getLocations = async () => {
