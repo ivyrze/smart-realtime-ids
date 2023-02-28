@@ -18,7 +18,7 @@ const getLocations = async () => {
         'features': []
     };
     
-    for await (const route of [ 261, 461, 462, 563 ]) {
+    for await (const route of [ 400, 405, 461, 462, 563 ]) {
         const json = (await requestQueue.get(
             `https://www.smartbus.org/DesktopModules/Smart.Endpoint/proxy.ashx?method=getvehiclesbyroute&routeid=${route}`,
         ))?.data;
