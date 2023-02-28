@@ -1,3 +1,5 @@
+import axios from 'axios';
+import rateLimit from 'axios-rate-limit';
 import arrow from '../asset/arrow.png';
 
 mapboxgl.accessToken = process.env.MAPBOX_ACCESS_TOKEN;
@@ -8,6 +10,8 @@ const map = new mapboxgl.Map({
     zoom: 9
 });
 
+const requestQueue = rateLimit(axios.create(), { maxRPS: 2 });
+
 const getLocations = async () => {
     let geojson = {
         'type': 'FeatureCollection',
@@ -15,11 +19,9 @@ const getLocations = async () => {
     };
     
     for await (const route of [ 261, 461, 462, 563 ]) {
-        const response = await fetch(
+        const json = (await requestQueue.get(
             `https://www.smartbus.org/DesktopModules/Smart.Endpoint/proxy.ashx?method=getvehiclesbyroute&routeid=${route}`,
-            { method: 'GET' }
-        );
-        const json = await response.json();
+        ))?.data;
         
         let vehicles = json['bustime-response'].vehicle;
         if (!vehicles) { continue; }
