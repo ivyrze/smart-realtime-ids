@@ -1,0 +1,32 @@
+[
+    {
+        "id": "realtime-circle",
+        "type": "circle",
+        "source": "realtime",
+        "paint": {
+            "circle-radius": 8,
+            "circle-color": "rgba(189, 189, 189, 0.97)",
+            "circle-stroke-width": 2
+        }
+    },
+    {
+        "id": "realtime-icons",
+        "type": "symbol",
+        "source": "realtime",
+        "paint": {
+            "text-halo-color": "hsla(0, 0%, 95%, 0.80)",
+            "text-halo-width": 4
+        },
+        "layout": {
+            "icon-image": "arrow",
+            "icon-allow-overlap": true,
+            "icon-size": 0.1,
+            "icon-rotate": ["to-number", ["get", "hdg"]],
+            "text-font": [ "DIN Pro Medium" ],
+            "text-allow-overlap": true,
+            "text-ignore-placement": true,
+            "text-field": ["get", "text"],
+            "text-offset": [0, 1.25]
+        }
+    }
+]
