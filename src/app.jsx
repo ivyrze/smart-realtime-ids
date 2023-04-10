@@ -1,11 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import axios from 'axios';
 import rateLimit from 'axios-rate-limit';
+import Select from 'react-select';
 import { Map } from './map';
+import routeNames from './route-names.json';
 
 export const App = () => {
     const [ locations, setLocations ] = useState();
-    const routes = [ 261, 461, 462, 563 ];
+    const defaultRoutes = routeNames.filter(route => route.default);
+    const [ routes, setRoutes ] = useState(defaultRoutes);
     
     const requestQueue = useMemo(() => {
         return rateLimit(axios.create(), { maxRPS: 2 });
@@ -19,7 +22,7 @@ export const App = () => {
         
         for await (const route of routes) {
             const json = (await requestQueue.get(
-                `https://www.smartbus.org/DesktopModules/Smart.Endpoint/proxy.ashx?method=getvehiclesbyroute&routeid=${route}`,
+                `https://www.smartbus.org/DesktopModules/Smart.Endpoint/proxy.ashx?method=getvehiclesbyroute&routeid=${route.value}`,
             ))?.data;
             
             let vehicles = json['bustime-response'].vehicle;
@@ -52,6 +55,14 @@ export const App = () => {
     }, [ fetchLocations ]);
     
     return (
-        <Map locations={ locations } />
+        <>
+            <Map locations={ locations } />
+            <Select
+                className="route-select"
+                onChange={ setRoutes }
+                defaultValue={ defaultRoutes }
+                options={ routeNames }
+                isMulti={ true } />
+        </>
     );
 };
