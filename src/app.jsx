@@ -14,7 +14,7 @@ export const App = () => {
         return rateLimit(axios.create(), { maxRPS: 2 });
     }, []);
     
-    const fetchLocations = async routes => {
+    const fetchLocations = useMemo(() => async routes => {
         let geojson = {
             'type': 'FeatureCollection',
             'features': []
@@ -47,12 +47,15 @@ export const App = () => {
         }
         
         setLocations(geojson);
-    };
+    }, []);
     
     useEffect(() => {
-        const interval = setInterval(fetchLocations(routes), 10000);
+        fetchLocations(routes);
+        if (!routes?.length) { return; }
+        
+        const interval = setInterval(() => fetchLocations(routes), 10000);
         return () => clearInterval(interval);
-    }, [ fetchLocations ]);
+    }, [ fetchLocations, routes ]);
     
     return (
         <>
