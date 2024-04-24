@@ -7,7 +7,7 @@ import routeNames from './route-names.json';
 
 export const App = () => {
     const [ locations, setLocations ] = useState();
-    const defaultRoutes = routeNames.filter(route => route.default);
+    const defaultRoutes = routeNames.map(group => group.options).flat().filter(route => route.default);
     const [ routes, setRoutes ] = useState(defaultRoutes);
     
     const requestQueue = useMemo(() => {
@@ -19,14 +19,22 @@ export const App = () => {
             'type': 'FeatureCollection',
             'features': []
         };
-        
-        for await (const route of routes) {
+
+        const groupedRoutes = Object.groupBy(routes, route => {
+            return route.value.split("-")[0];
+        });
+
+        await Promise.all(Object.keys(groupedRoutes).map(async agencyId => {
+            const routeIds = groupedRoutes[agencyId].map(route => {
+                return route.value.split("-")[1];
+            }).join(',');
+
             const json = (await requestQueue.get(
-                `https://transit.det.city/.netlify/functions/route?routeId=${route.value}&agency=smart`,
+                `https://transit.det.city/.netlify/functions/route?routeId=${routeIds}&agency=${agencyId}`,
             ))?.data;
             
             let vehicles = json['bustime-response'].vehicle;
-            if (!vehicles) { continue; }
+            if (!vehicles) { return; }
             else if (!Array.isArray(vehicles)) { vehicles = [ vehicles ]; }
             
             vehicles = vehicles.map(vehicle => {
@@ -44,7 +52,7 @@ export const App = () => {
             });
             
             geojson.features.push(...vehicles);
-        }
+        }));
         
         setLocations(geojson);
     }, []);
