@@ -22,7 +22,7 @@ export const App = () => {
         
         for await (const route of routes) {
             const json = (await requestQueue.get(
-                `https://www.smartbus.org/DesktopModules/Smart.Endpoint/proxy.ashx?method=getvehiclesbyroute&routeid=${route.value}`,
+                `https://transit.det.city/.netlify/functions/route?routeId=${route.value}&agency=smart`,
             ))?.data;
             
             let vehicles = json['bustime-response'].vehicle;
