@@ -51,5 +51,11 @@ export const endpoints = {
         type: 'json',
         adapter: adapters.bustime,
         proxy: false
+    },
+    cata: {
+        url: () => `http://developers.cata.org/gtfsrt/vehicle/VehiclePositions.pb`,
+        type: 'arraybuffer',
+        adapter: adapters.protobuf,
+        proxy: true
     }
 };
