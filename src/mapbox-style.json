@@ -21,7 +21,7 @@
             "icon-image": "arrow",
             "icon-allow-overlap": true,
             "icon-size": 0.1,
-            "icon-rotate": ["to-number", ["get", "hdg"]],
+            "icon-rotate": ["to-number", ["get", "heading"]],
             "text-font": [ "DIN Pro Medium" ],
             "text-allow-overlap": true,
             "text-ignore-placement": true,

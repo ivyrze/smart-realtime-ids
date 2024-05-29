@@ -3,6 +3,7 @@ import axios from 'axios';
 import rateLimit from 'axios-rate-limit';
 import Select from 'react-select';
 import { Map } from './map';
+import { endpoints } from './endpoints.js';
 import routeNames from './route-names.json';
 
 export const App = () => {
@@ -27,17 +28,19 @@ export const App = () => {
         await Promise.all(Object.keys(groupedRoutes).map(async agencyId => {
             const routeIds = groupedRoutes[agencyId].map(route => {
                 return route.value.split("-")[1];
-            }).join(',');
+            });
 
-            const json = (await requestQueue.get(
-                `https://transit.det.city/.netlify/functions/route?routeId=${routeIds}&agency=${agencyId}`,
-            ))?.data;
+            const endpoint = endpoints[agencyId];
+            const url = !endpoint.proxy ?
+                endpoint.url(routeIds) :
+                `/.netlify/functions/proxy?agency=${agencyId}&routeIds=${routeIds.join(',')}`;
             
-            let vehicles = json['bustime-response'].vehicle;
-            if (!vehicles) { return; }
-            else if (!Array.isArray(vehicles)) { vehicles = [ vehicles ]; }
-            
-            vehicles = vehicles.map(vehicle => {
+            const data = (await requestQueue.get(url, {
+                responseType: endpoint.type
+            }))?.data;
+            if (!data) { return; }
+
+            const vehicles = endpoint.adapter(data, routeIds).map(vehicle => {
                 return {
                     type: 'Feature',
                     geometry: {
@@ -45,8 +48,8 @@ export const App = () => {
                         coordinates: [ vehicle.lon, vehicle.lat ]
                     },
                     properties: {
-                        text: `${vehicle.rt} - #${vehicle.vid}`,
-                        hdg: vehicle.hdg
+                        text: `${vehicle.route} - #${vehicle.id}`,
+                        heading: vehicle.heading
                     }
                 };
             });
