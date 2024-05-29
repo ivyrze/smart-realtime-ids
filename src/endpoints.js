@@ -1,3 +1,5 @@
+import bindings from 'gtfs-realtime-bindings';
+
 const adapters = {
     bustime: data => {
         let vehicles = data['bustime-response'].vehicle;
@@ -13,6 +15,21 @@ const adapters = {
         }));
 
         return vehicles;
+    },
+    protobuf: (data, routeIds) => {
+        const message = bindings.transit_realtime.FeedMessage.decode(
+            new Uint8Array(data)
+        );
+
+        return message.entity.map(({ vehicle }) => ({
+            id: vehicle.vehicle.id,
+            lat: vehicle.position.latitude,
+            lon: vehicle.position.longitude,
+            route: vehicle.trip.routeId,
+            heading: vehicle.position.bearing
+        })).filter(vehicle => {
+            return routeIds.includes(vehicle.route);
+        });
     }
 };
 
