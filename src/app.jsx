@@ -33,7 +33,7 @@ export const App = () => {
             const endpoint = endpoints[agencyId];
             const url = !endpoint.proxy ?
                 endpoint.url(routeIds) :
-                `/.netlify/functions/proxy?agency=${agencyId}&routeIds=${routeIds.join(',')}`;
+                `/api/proxy?agency=${agencyId}&routeIds=${routeIds.join(',')}`;
             
             const data = (await requestQueue.get(url, {
                 responseType: endpoint.type

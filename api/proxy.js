@@ -1,6 +1,6 @@
 import { endpoints } from "../src/endpoints.js";
 
-export default async req => {
+export const GET = async req => {
 	const params = Object.fromEntries(
 		(new URL(req.url)).searchParams.entries()
 	);
